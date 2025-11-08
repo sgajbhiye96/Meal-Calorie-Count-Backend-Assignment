@@ -100,3 +100,14 @@ def test_get_calories_authenticated(client):
 
     # Expect either success or USDA API error
     assert response.status_code in (200, 500)
+
+def test_logout(client):
+    """User should be able to log out successfully."""
+    # Log in first
+    login_response = client.post("/auth/login", data={"email": "test@example.com", "password": "pass123"})
+    cookies = login_response.cookies
+
+    # Now logout
+    response = client.get("/auth/logout", cookies=cookies, follow_redirects=False)
+    assert response.status_code == 303
+    assert "set-cookie" in response.headers

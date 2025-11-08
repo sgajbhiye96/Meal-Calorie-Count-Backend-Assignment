@@ -5,7 +5,7 @@ from .. import models
 from ..database import get_db
 from ..utils.hashing import hash_password, verify_password
 from ..utils.jwt_handler import create_access_token
-
+from fastapi.responses import RedirectResponse
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
@@ -61,4 +61,11 @@ def login_user(
         samesite="Lax",  # important: ensures cookie is sent on redirects
         path="/",        # ensures it’s valid for all routes
     )
+    return response
+
+@router.get("/logout")
+def logout_user():
+    """Clears the JWT cookie and redirects to login page."""
+    response = RedirectResponse(url="/login", status_code=303)
+    response.delete_cookie("access_token")
     return response
